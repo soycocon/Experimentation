@@ -1,17 +1,37 @@
-<!-- Pega esto en un embed de Framer o en un HTML externo -->
-<script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Text Disintegration</title>
+  <!-- Google Fonts: Instrument Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: white;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
 let font;
 let particles = [];
 let pg;
 let hover = false;
 
 function preload() {
-  font = loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Regular.otf');
+  font = 'Instrument Sans'; // Google Font, ya cargada en el <head>
 }
 
 function setup() {
-  createCanvas(800, 200);
+  createCanvas(windowWidth, 300);
   textFont(font);
   textSize(128);
   pg = createGraphics(width, height);
@@ -65,7 +85,7 @@ class Particle {
     }
 
     this.vel.add(this.acc);
-    this.vel.mult(0.9); // Fricción
+    this.vel.mult(0.9);
     this.pos.add(this.vel);
     this.acc.mult(0);
   }
@@ -76,4 +96,6 @@ class Particle {
     ellipse(this.pos.x, this.pos.y, this.size);
   }
 }
-</script>
+  </script>
+</body>
+</html>
