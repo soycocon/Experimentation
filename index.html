@@ -1,0 +1,79 @@
+<!-- Pega esto en un embed de Framer o en un HTML externo -->
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+<script>
+let font;
+let particles = [];
+let pg;
+let hover = false;
+
+function preload() {
+  font = loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Regular.otf');
+}
+
+function setup() {
+  createCanvas(800, 200);
+  textFont(font);
+  textSize(128);
+  pg = createGraphics(width, height);
+  pg.pixelDensity(1);
+  pg.background(255);
+  pg.fill(0);
+  pg.textAlign(CENTER, CENTER);
+  pg.text("Projects", width / 2, height / 2);
+  pg.loadPixels();
+
+  for (let x = 0; x < pg.width; x += 4) {
+    for (let y = 0; y < pg.height; y += 4) {
+      let idx = 4 * (x + y * pg.width);
+      let alpha = pg.pixels[idx + 3];
+      if (alpha > 50) {
+        particles.push(new Particle(x, y));
+      }
+    }
+  }
+}
+
+function draw() {
+  background(255);
+  for (let p of particles) {
+    p.update();
+    p.show();
+  }
+}
+
+function mouseMoved() {
+  hover = true;
+}
+
+class Particle {
+  constructor(x, y) {
+    this.orig = createVector(x, y);
+    this.pos = this.orig.copy();
+    this.vel = createVector();
+    this.acc = createVector();
+    this.size = 2;
+  }
+
+  update() {
+    if (hover) {
+      let d = dist(mouseX, mouseY, this.pos.x, this.pos.y);
+      if (d < 100) {
+        let force = p5.Vector.sub(this.pos, createVector(mouseX, mouseY));
+        force.setMag(2 / d);
+        this.acc.add(force);
+      }
+    }
+
+    this.vel.add(this.acc);
+    this.vel.mult(0.9); // Fricción
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+
+  show() {
+    noStroke();
+    fill(0);
+    ellipse(this.pos.x, this.pos.y, this.size);
+  }
+}
+</script>
