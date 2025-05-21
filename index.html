@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Text Disintegration</title>
-  <!-- Instrument Sans from Google Fonts -->
+  <title>Text Disintegration Lite</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -24,20 +23,12 @@
 let particles = [];
 let pg;
 let hover = false;
-let fontReady = false;
-
-function preload() {
-  // No need to loadFont, we use Google Fonts directly
-}
 
 function setup() {
-  createCanvas(windowWidth, 300);
-  textFont('Instrument Sans'); // Use the loaded Google Font
-  textSize(128);
-  textAlign(CENTER, CENTER);
-
-  generateParticles();
-  fontReady = true;
+  createCanvas(800, 300);
+  setTimeout(() => {
+    generateParticles();
+  }, 200); // Espera mínima para asegurar que la fuente esté cargada
 }
 
 function generateParticles() {
@@ -47,17 +38,17 @@ function generateParticles() {
   pg.pixelDensity(1);
   pg.background(255);
   pg.fill(0);
-  pg.textAlign(CENTER, CENTER);
-  pg.textSize(128);
   pg.textFont('Instrument Sans');
+  pg.textAlign(CENTER, CENTER);
+  pg.textSize(96);
   pg.text("Projects", width / 2, height / 2);
   pg.loadPixels();
 
-  for (let x = 0; x < pg.width; x += 4) {
-    for (let y = 0; y < pg.height; y += 4) {
+  for (let x = 0; x < pg.width; x += 6) {
+    for (let y = 0; y < pg.height; y += 6) {
       let idx = 4 * (x + y * pg.width);
       let alpha = pg.pixels[idx + 3];
-      if (alpha > 50) {
+      if (alpha > 100) {
         particles.push(new Particle(x, y));
       }
     }
@@ -65,7 +56,6 @@ function generateParticles() {
 }
 
 function draw() {
-  if (!fontReady) return;
   background(255);
   for (let p of particles) {
     p.update();
@@ -82,11 +72,6 @@ function touchMoved() {
   return false;
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, 300);
-  generateParticles();
-}
-
 class Particle {
   constructor(x, y) {
     this.orig = createVector(x, y);
@@ -99,15 +84,15 @@ class Particle {
   update() {
     if (hover) {
       let d = dist(mouseX, mouseY, this.pos.x, this.pos.y);
-      if (d < 100 && d > 2) {
+      if (d < 80 && d > 4) {
         let force = p5.Vector.sub(this.pos, createVector(mouseX, mouseY));
-        force.setMag(2 / d);
+        force.setMag(0.5 / d); // menos impacto
         this.acc.add(force);
       }
     }
 
     this.vel.add(this.acc);
-    this.vel.mult(0.9); // Fricción
+    this.vel.mult(0.85); // más fricción
     this.pos.add(this.vel);
     this.acc.mult(0);
   }
