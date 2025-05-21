@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Text Disintegration</title>
-  <!-- Google Fonts: Instrument Sans -->
+  <!-- Instrument Sans from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -21,24 +21,35 @@
 <body>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
   <script>
-let font;
 let particles = [];
 let pg;
 let hover = false;
+let fontReady = false;
 
 function preload() {
-  font = 'Instrument Sans'; // Google Font, ya cargada en el <head>
+  // No need to loadFont, we use Google Fonts directly
 }
 
 function setup() {
   createCanvas(windowWidth, 300);
-  textFont(font);
+  textFont('Instrument Sans'); // Use the loaded Google Font
   textSize(128);
+  textAlign(CENTER, CENTER);
+
+  generateParticles();
+  fontReady = true;
+}
+
+function generateParticles() {
+  particles = [];
+
   pg = createGraphics(width, height);
   pg.pixelDensity(1);
   pg.background(255);
   pg.fill(0);
   pg.textAlign(CENTER, CENTER);
+  pg.textSize(128);
+  pg.textFont('Instrument Sans');
   pg.text("Projects", width / 2, height / 2);
   pg.loadPixels();
 
@@ -54,6 +65,7 @@ function setup() {
 }
 
 function draw() {
+  if (!fontReady) return;
   background(255);
   for (let p of particles) {
     p.update();
@@ -63,6 +75,16 @@ function draw() {
 
 function mouseMoved() {
   hover = true;
+}
+
+function touchMoved() {
+  hover = true;
+  return false;
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, 300);
+  generateParticles();
 }
 
 class Particle {
@@ -77,7 +99,7 @@ class Particle {
   update() {
     if (hover) {
       let d = dist(mouseX, mouseY, this.pos.x, this.pos.y);
-      if (d < 100) {
+      if (d < 100 && d > 2) {
         let force = p5.Vector.sub(this.pos, createVector(mouseX, mouseY));
         force.setMag(2 / d);
         this.acc.add(force);
@@ -85,7 +107,7 @@ class Particle {
     }
 
     this.vel.add(this.acc);
-    this.vel.mult(0.9);
+    this.vel.mult(0.9); // Fricción
     this.pos.add(this.vel);
     this.acc.mult(0);
   }
